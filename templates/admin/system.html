@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('manage_users') }}">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('system_management') }}">
+                            <i class="fas fa-cogs"></i> System
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1>System Management</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button class="btn btn-warning mr-2" onclick="backupSystem()">
+                        <i class="fas fa-download"></i> Backup Now
+                    </button>
+                    <button class="btn btn-danger" onclick="shutdownSystem()">
+                        <i class="fas fa-power-off"></i> Shutdown
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Stats -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">System Status</h5>
+                            <p class="card-text text-success">
+                                <i class="fas fa-check-circle"></i> {{ stats.system_status }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Database Size</h5>
+                            <p class="card-text">
+                                {{ (stats.db_size / 1024 / 1024) | round(2) }} MB
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Last Backup</h5>
+                            <p class="card-text">
+                                {{ stats.last_backup.strftime('%Y-%m-%d %H:%M') if stats.last_backup else 'Never' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Uptime</h5>
+                            <p class="card-text">{{ stats.uptime }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Logs -->
+            <div class="mt-4">
+                <h3>System Logs</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                                <th>User</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in system_logs %}
+                            <tr>
+                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>{{ log.action }}</td>
+                                <td>{{ log.description }}</td>
+                                <td>{{ log.user }}</td>
+                                <td>{{ log.ip_address }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+function backupSystem() {
+    if (confirm('Are you sure you want to create a system backup?')) {
+        fetch('/admin/backup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Backup created successfully at: ' + data.path);
+                location.reload();
+            } else {
+                alert(data.message || 'Error creating backup');
+            }
+        });
+    }
+}
+
+function shutdownSystem() {
+    if (confirm('Are you sure you want to shut down the system? This will disconnect all users.')) {
+        fetch('/admin/shutdown', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('System is shutting down...');
+                window.location.href = '/login';
+            } else {
+                alert(data.message || 'Error shutting down system');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
+{% endblock %} 

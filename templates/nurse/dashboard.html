@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #4cc9f0;
+        --warning-color: #f72585;
+        --info-color: #4895ef;
+        --health-color: #2ec4b6;
+        --dark-color: #212529;
+        --light-color: #f8f9fa;
+        --transition: all 0.3s ease;
+    }
+
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--health-color), var(--primary-color));
+        border-radius: 20px;
+        padding: 2rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .welcome-section {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .profile-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: var(--transition);
+    }
+
+    .profile-circle:hover {
+        transform: scale(1.1);
+    }
+
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .quick-actions .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .quick-actions .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: var(--transition);
+        animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+    .stat-card.health { border-left: 4px solid var(--health-color); }
+    .stat-card.warning { border-left: 4px solid var(--warning-color); }
+    .stat-card.info { border-left: 4px solid var(--info-color); }
+
+    .stat-content h6 {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-content h3 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+    }
+
+    .stat-content p {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .trend-up { color: #00cc66; }
+    .trend-attention { color: #ffa31a; }
+    .trend-stable { color: #4895ef; }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .stat-card.health .stat-icon { background: var(--health-color); }
+    .stat-card.warning .stat-icon { background: var(--warning-color); }
+    .stat-card.info .stat-icon { background: var(--info-color); }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: var(--transition);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+        transition: var(--transition);
+    }
+
+    .card-icon-wrapper.health { background: var(--health-color); }
+    .card-icon-wrapper.info { background: var(--info-color); }
+
+    .dashboard-card:hover .card-icon-wrapper {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .dashboard-card h3 {
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+    }
+
+    .dashboard-card p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .card-actions .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .recent-records {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .recent-records h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table th {
+        background: var(--light-color);
+        font-weight: 600;
+    }
+
+    .table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .bg-checkup { background: #e3f2fd; color: #1976d2; }
+    .bg-medication { background: #e8f5e9; color: #2e7d32; }
+    .bg-pending { background: #fff3e0; color: #f57c00; }
+    .bg-completed { background: #e8f5e9; color: #2e7d32; }
+
+    .table .btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .table .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+
+        .dashboard-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .welcome-section {
+            flex-direction: column;
+        }
+
+        .quick-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .quick-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .dashboard-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+
+        .card-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <div class="profile-circle">
+                {% if session.profile_image %}
+                    <img src="{{ url_for('static', filename='uploads/' + session.profile_image) }}" alt="Profile" class="profile-image">
+                {% else %}
+                    <i class="fas fa-user-circle fa-2x"></i>
+                {% endif %}
+            </div>
+            <div>
+                <h2>Welcome, Nurse {{ session.username }}</h2>
+                <p><i class="fas fa-calendar-alt me-2"></i>{{ current_date }}</p>
+            </div>
+        </div>
+        <div class="quick-actions">
+            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#profileModal">
+                <i class="fas fa-user-edit me-2"></i>Edit Profile
+            </button>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="stat-card health">
+            <div class="stat-content">
+                <h6>Total Children</h6>
+                <h3>{{ total_children }}</h3>
+                <p class="trend-up"><i class="fas fa-user-plus"></i>Under care</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-child"></i>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-content">
+                <h6>Pending Checkups</h6>
+                <h3>{{ pending_checkups }}</h3>
+                <p class="trend-attention"><i class="fas fa-clock"></i>Awaiting</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+        </div>
+        <div class="stat-card info">
+            <div class="stat-content">
+                <h6>Today's Appointments</h6>
+                <h3>{{ today_appointments }}</h3>
+                <p class="trend-stable"><i class="fas fa-calendar-check"></i>Scheduled</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="card-icon-wrapper health">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <h3>Medical Services</h3>
+            <p>Manage health records and checkups</p>
+            <div class="card-actions">
+                <a href="{{ url_for('medical_checkup') }}" class="btn btn-primary">New Checkup</a>
+                <a href="{{ url_for('medication_schedule') }}" class="btn btn-secondary">Medications</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-icon-wrapper info">
+                <i class="fas fa-file-medical"></i>
+            </div>
+            <h3>Health Records</h3>
+            <p>View and manage patient records</p>
+            <div class="card-actions">
+                <a href="{{ url_for('health_records') }}" class="btn btn-primary">View Records</a>
+                <a href="{{ url_for('add_health_record') }}" class="btn btn-secondary">Add Record</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="recent-records">
+        <h3><i class="fas fa-history me-2"></i>Recent Health Records</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Child</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in recent_records %}
+                    <tr>
+                        <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ record.child_name }}</td>
+                        <td><span class="badge bg-{{ record.type|lower }}">{{ record.type }}</span></td>
+                        <td><span class="badge bg-{{ record.status|lower }}">{{ record.status }}</span></td>
+                        <td>
+                            <button class="btn btn-info"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-warning"><i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% include 'components/profile_modal.html' %}
+{% endblock %}

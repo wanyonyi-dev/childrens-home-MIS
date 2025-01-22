@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+     <!-- Back to Dashboard Button -->
+     <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('nurse_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <div class="form-card">
+        <h2>Add Health Record</h2>
+        <form method="POST" action="{{ url_for('add_health_record') }}">
+            <div class="form-group">
+                <label>Child</label>
+                <select name="child_id" class="form-control" required>
+                    <option value="">Select Child</option>
+                    {% for child in children %}
+                    <option value="{{ child._id }}">{{ child.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Date</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Record Type</label>
+                    <select name="record_type" class="form-control" required>
+                        <option value="">Select Type</option>
+                        <option value="Checkup">Regular Checkup</option>
+                        <option value="Vaccination">Vaccination</option>
+                        <option value="Illness">Illness</option>
+                        <option value="Injury">Injury</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Treatment</label>
+                <textarea name="treatment" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Doctor</label>
+                    <input type="text" name="doctor" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Next Appointment</label>
+                    <input type="date" name="next_appointment" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Record</button>
+                <a href="{{ url_for('health_records') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

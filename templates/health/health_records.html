@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+     <!-- Back to Dashboard Button -->
+     <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('nurse_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <div class="header-section">
+        <h2>Health Records</h2>
+        <a href="{{ url_for('add_health_record') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Health Record
+        </a>
+    </div>
+
+    <div class="filter-section">
+        <input type="text" id="searchInput" placeholder="Search records..." class="form-control">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Child Name</th>
+                    <th>Date</th>
+                    <th>Record Type</th>
+                    <th>Doctor</th>
+                    <th>Next Appointment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.child_name }}</td>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.record_type }}</td>
+                    <td>{{ record.doctor }}</td>
+                    <td>{{ record.next_appointment }}</td>
+                    <td>
+                        <a href="#" class="btn btn-sm btn-info">View</a>
+                        <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ url_for('delete_record', record_type='health', record_id=record._id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+     <!-- Back to Dashboard Button -->
+     <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-users me-2"></i>Visitor Log</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" data-bs-toggle="modal" 
+                    data-bs-target="#addVisitorModal">
+                <i class="fas fa-user-plus me-2"></i>New Visitor
+            </button>
+        </div>
+    </div>
+
+    <!-- Active Visitors Card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Currently Signed In</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Purpose</th>
+                            <th>Visiting</th>
+                            <th>Check In Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visitor in active_visitors %}
+                        <tr>
+                            <td>{{ visitor.name }}</td>
+                            <td>{{ visitor.purpose }}</td>
+                            <td>{{ visitor.visiting }}</td>
+                            <td>{{ visitor.check_in.strftime('%H:%M') }}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" 
+                                        onclick="checkOut('{{ visitor._id }}')">
+                                    Check Out
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visitor History -->
+    <div class="card shadow">
+        <div class="card-header">
+            <h5 class="mb-0">Visitor History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="visitorTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Purpose</th>
+                            <th>Visiting</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in visitor_history %}
+                        <tr>
+                            <td>{{ visit.name }}</td>
+                            <td>{{ visit.purpose }}</td>
+                            <td>{{ visit.visiting }}</td>
+                            <td>{{ visit.check_in.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ visit.check_out.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ visit.duration }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Visitor Modal -->
+    <div class="modal fade" id="addVisitorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Visitor Check-In</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{{ url_for('visitor_log') }}">
+                    <div class="modal-body">
+                        <div class="form-group mb-3">
+                            <label>Visitor Name</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Purpose of Visit</label>
+                            <input type="text" name="purpose" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Visiting</label>
+                            <input type="text" name="visiting" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>ID Type</label>
+                            <select name="id_type" class="form-control" required>
+                                <option value="national_id">National ID</option>
+                                <option value="passport">Passport</option>
+                                <option value="drivers_license">Driver's License</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>ID Number</label>
+                            <input type="text" name="id_number" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Phone Number</label>
+                            <input type="tel" name="phone" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" 
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Check In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#visitorTable').DataTable({
+        order: [[3, 'desc']],
+        pageLength: 25
+    });
+});
+
+function checkOut(visitorId) {
+    if (confirm('Are you sure you want to check out this visitor?')) {
+        fetch(`/visitor_checkout/${visitorId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error checking out visitor');
+            }
+        });
+    }
+}
+</script>
+{% endblock %} 

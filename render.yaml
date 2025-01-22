@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: childrens-home-system
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: MONGO_URI
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+      - key: UPLOAD_FOLDER
+        value: /data/uploads
+      - key: MAX_CONTENT_LENGTH
+        value: 16777216  # 16MB max file upload
+
+databases:
+  - name: childrens-home-mongodb
+    databaseName: children_home
+    ipAllowList: []  # Allow all IPs
+    plan: free
+
+volumes:
+  - name: uploads
+    mountPath: /data/uploads
+    sizeGB: 1 

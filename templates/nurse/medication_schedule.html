@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+     <!-- Back to Dashboard Button -->
+     <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('nurse_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <h2>Medication Schedule</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="child_id">Select Child</label>
+            <select class="form-control" id="child_id" name="child_id" required>
+                <option value="">Choose a child...</option>
+                {% for child in children %}
+                <option value="{{ child._id }}">{{ child.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="medication_name">Medication Name</label>
+            <input type="text" class="form-control" id="medication_name" name="medication_name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dosage">Dosage</label>
+            <input type="text" class="form-control" id="dosage" name="dosage" required>
+        </div>
+
+        <div class="form-group">
+            <label for="frequency">Frequency</label>
+            <select class="form-control" id="frequency" name="frequency" required>
+                <option value="once_daily">Once Daily</option>
+                <option value="twice_daily">Twice Daily</option>
+                <option value="thrice_daily">Three Times Daily</option>
+                <option value="four_times_daily">Four Times Daily</option>
+                <option value="as_needed">As Needed</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Medication Schedule</button>
+        <a href="{{ url_for('nurse_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %} 

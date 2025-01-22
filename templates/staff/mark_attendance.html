@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+       <!-- Back to Dashboard Button -->
+       <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-clipboard-check me-2"></i>Daily Attendance
+                </h3>
+                <div>
+                    <button type="button" class="btn btn-light" onclick="markAllPresent()">
+                        Mark All Present
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('mark_attendance') }}">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" name="date" class="form-control" 
+                                   value="{{ today }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Child Name</th>
+                                <th>Status</th>
+                                <th>Time In</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for child in children %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if child.photo %}
+                                        <img src="{{ url_for('static', filename='uploads/children/' + child.photo) }}" 
+                                             class="rounded-circle me-2" width="40" height="40">
+                                        {% endif %}
+                                        {{ child.name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                        <label class="btn btn-outline-success active">
+                                            <input type="radio" name="status_{{ child._id }}" 
+                                                   value="present" checked> Present
+                                        </label>
+                                        <label class="btn btn-outline-danger">
+                                            <input type="radio" name="status_{{ child._id }}" 
+                                                   value="absent"> Absent
+                                        </label>
+                                        <label class="btn btn-outline-warning">
+                                            <input type="radio" name="status_{{ child._id }}" 
+                                                   value="late"> Late
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="time" name="time_{{ child._id }}" 
+                                           class="form-control">
+                                </td>
+                                <td>
+                                    <input type="text" name="notes_{{ child._id }}" 
+                                           class="form-control" placeholder="Add notes">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i>Save Attendance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-group-toggle .btn {
+    min-width: 80px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style>
+
+<script>
+function markAllPresent() {
+    document.querySelectorAll('input[value="present"]').forEach(radio => {
+        radio.checked = true;
+        radio.closest('.btn').classList.add('active');
+        radio.closest('.btn-group').querySelectorAll('.btn').forEach(btn => {
+            if (!btn.contains(radio)) btn.classList.remove('active');
+        });
+    });
+}
+
+// Auto-save draft
+setInterval(() => {
+    localStorage.setItem('attendance_draft', JSON.stringify({
+        date: document.querySelector('input[name="date"]').value,
+        data: Array.from(document.querySelectorAll('tr')).slice(1).map(row => ({
+            childId: row.querySelector('input[type="radio"]').name.split('_')[1],
+            status: row.querySelector('input[type="radio"]:checked').value,
+            timeIn: row.querySelector('input[type="time"]').value,
+            notes: row.querySelector('input[type="text"]').value
+        }))
+    }));
+}, 30000);
+</script>
+{% endblock %} 

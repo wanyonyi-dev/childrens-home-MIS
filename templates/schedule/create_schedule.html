@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="form-card">
+        <h2>Create Schedule</h2>
+        <form method="POST" action="{{ url_for('create_schedule') }}">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Date</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Time</label>
+                    <input type="time" name="time" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Activity Type</label>
+                <select name="activity_type" class="form-control" required>
+                    <option value="">Select Activity Type</option>
+                    <option value="Meal">Meal</option>
+                    <option value="Education">Education</option>
+                    <option value="Recreation">Recreation</option>
+                    <option value="Health Check">Health Check</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Assigned Staff</label>
+                <input type="text" name="assigned_staff" class="form-control" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Schedule</button>
+                <a href="{{ url_for('view_schedule') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

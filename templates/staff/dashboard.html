@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="header-top">
+            <div class="welcome-section">
+                <div class="profile-circle">
+                    {% if session.profile_image %}
+                        <img src="{{ url_for('static', filename='uploads/' + session.profile_image) }}" 
+                             alt="Profile" class="profile-image">
+                    {% else %}
+                        <i class="fas fa-user-circle"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h2>Welcome back, {{ session.username }}</h2>
+                    <p><i class="fas fa-calendar-alt me-2"></i>{{ current_date }}</p>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#profileModal">
+                    <i class="fas fa-user-edit me-2"></i>Edit Profile
+                </button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+                </a>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card primary hover-lift">
+                <div class="stat-content">
+                    <h6>Total Children</h6>
+                    <h3>{{ stats.total_children }}</h3>
+                    <p>Active Residents</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-child"></i>
+                </div>
+            </div>
+
+            <div class="stat-card success hover-lift">
+                <div class="stat-content">
+                    <h6>Today's Attendance</h6>
+                    <h3>{{ stats.today_attendance }}</h3>
+                    <p>Children Present</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+            </div>
+
+            <div class="stat-card warning hover-lift">
+                <div class="stat-content">
+                    <h6>Pending Tasks</h6>
+                    <h3>{{ stats.pending_tasks }}</h3>
+                    <p>Tasks to Complete</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+            </div>
+
+            <div class="stat-card info hover-lift">
+                <div class="stat-content">
+                    <h6>Today's Activities</h6>
+                    <h3>{{ stats.todays_activities }}</h3>
+                    <p>Scheduled Events</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-item mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="quick-actions-grid">
+                <a href="{{ url_for('add_child') }}" class="action-btn">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Child</span>
+                </a>
+                <a href="{{ url_for('mark_attendance') }}" class="action-btn">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Mark Attendance</span>
+                </a>
+                <a href="{{ url_for('report_incident') }}" class="action-btn">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Report Incident</span>
+                </a>
+                <a href="{{ url_for('manage_activities') }}" class="action-btn">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span>Add Activity</span>
+                </a>
+                <a href="{{ url_for('view_financial_records') }}" class="action-btn">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Financial Records</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="grid-item">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history me-2"></i>Recent Activities</h5>
+                    <a href="{{ url_for('manage_activities') }}" class="btn btn-primary btn-sm">View All</a>
+                </div>
+                <div class="activities-list">
+                    {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h6>{{ activity.title }}</h6>
+                            <p>{{ activity.date }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Edit Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('update_profile') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        <input type="file" name="profile_image" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-control" value="{{ session.full_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ session.email }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

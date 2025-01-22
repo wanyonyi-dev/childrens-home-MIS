@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+     <!-- Back to Dashboard Button -->
+ <div class="mb-3 d-flex justify-content-end">
+    <a href="{{ url_for('staff_dashboard') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+    <div class="header-section">
+        <h2>Children Records</h2>
+        <a href="{{ url_for('add_child') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Child
+        </a>
+    </div>
+
+    <div class="search-section">
+        <input type="text" id="searchInput" placeholder="Search children..." class="form-control">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Guardian</th>
+                    <th>Admission Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for child in children %}
+                <tr>
+                    <td>{{ child.name }}</td>
+                    <td>{{ child.dob }}</td>
+                    <td>{{ child.guardian_name }}</td>
+                    <td>{{ child.admission_date.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="#" class="btn btn-sm btn-info">View</a>
+                        <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ url_for('delete_record', record_type='child', record_id=child._id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

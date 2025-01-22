@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+     <!-- Back to Dashboard Button -->
+     <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Report Incident
+            </h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('report_incident') }}" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label>Date</label>
+                            <input type="date" name="date" class="form-control" 
+                                   value="{{ today }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label>Time</label>
+                            <input type="time" name="time" class="form-control" 
+                                   value="{{ now }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Location</label>
+                    <input type="text" name="location" class="form-control" required>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Children Involved</label>
+                    <select name="children_involved" class="form-control select2" multiple required>
+                        {% for child in children %}
+                        <option value="{{ child._id }}">{{ child.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Description of Incident</label>
+                    <textarea name="description" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Action Taken</label>
+                    <textarea name="action_taken" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Severity Level</label>
+                    <select name="severity" class="form-control" required>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Upload Photos/Documents (if any)</label>
+                    <input type="file" name="attachments" class="form-control" multiple>
+                </div>
+
+                <div class="text-end">
+                    <a href="{{ url_for('staff_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-warning">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: 'Select children involved',
+        allowClear: true
+    });
+});
+</script>
+{% endblock %} 

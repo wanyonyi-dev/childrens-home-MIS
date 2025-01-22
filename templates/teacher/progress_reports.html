@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Updated Back to Dashboard Button -->
+    <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h2><i class="fas fa-chart-line me-2"></i>Student Progress Reports</h2>
+        </div>
+        <div class="card-body">
+            <!-- Student Selection -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <select class="form-control" id="studentSelect">
+                        <option value="">Select Student</option>
+                        {% for student in students %}
+                        <option value="{{ student._id }}">{{ student.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <select class="form-control" id="termSelect">
+                        <option value="current">Current Term</option>
+                        <option value="previous">Previous Term</option>
+                        <option value="all">All Terms</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Progress Charts -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Grade Distribution</h5>
+                            <canvas id="gradeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Subject Performance</h5>
+                            <canvas id="subjectChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Progress Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Average Grade</th>
+                            <th>Trend</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody id="progressTableBody">
+                        {% for progress in progress_data %}
+                        <tr>
+                            <td>{{ progress.subject }}</td>
+                            <td>{{ progress.average_grade }}</td>
+                            <td>
+                                {% if progress.trend == 'up' %}
+                                <i class="fas fa-arrow-up text-success"></i>
+                                {% elif progress.trend == 'down' %}
+                                <i class="fas fa-arrow-down text-danger"></i>
+                                {% else %}
+                                <i class="fas fa-equals text-warning"></i>
+                                {% endif %}
+                            </td>
+                            <td>{{ progress.comments }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Add Chart.js initialization code here
+</script>
+{% endblock %}
+{% endblock %} 

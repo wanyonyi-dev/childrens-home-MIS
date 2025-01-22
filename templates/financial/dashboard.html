@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <!-- Back to Dashboard Button -->
+ <div class="mb-3 d-flex justify-content-end">
+    <a href="{{ url_for('staff_dashboard') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary">Financial Management</h2>
+        </div>
+    </div>
+
+    <!-- Financial Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Current Balance</h5>
+                    <h3>KES {{ "{:,.2f}".format(total_balance) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Donations</h5>
+                    <h3>KES {{ "{:,.2f}".format(total_donations) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses</h5>
+                    <h3>KES {{ "{:,.2f}".format(total_expenses) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Balance</h5>
+                    <h3>KES {{ "{:,.2f}".format(total_balance) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+                <i class="fas fa-plus-circle"></i> Add Transaction
+            </button>
+            <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#recordDonationModal">
+                <i class="fas fa-gift"></i> Record Donation
+            </button>
+            <a href="{{ url_for('generate_financial_report') }}" class="btn btn-info">
+                <i class="fas fa-file-alt"></i> Generate Report
+            </a>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                    <th>Recorded By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ transaction.date }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if transaction.type == 'income' else 'danger' }}">
+                                            {{ transaction.type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ transaction.category }}</td>
+                                    <td>KES {{ "{:,.2f}".format(transaction.amount) }}</td>
+                                    <td>{{ transaction.description }}</td>
+                                    <td>{{ transaction.recorded_by }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donations Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Donations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Donor</th>
+                                    <th>Type</th>
+                                    <th>Amount/Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for donation in donations %}
+                                <tr>
+                                    <td>{{ donation.date }}</td>
+                                    <td>{{ donation.donor_name }}</td>
+                                    <td>{{ donation.type }}</td>
+                                    <td>KES {{ "{:,.2f}".format(donation.amount) }}</td>
+                                    <td>{{ donation.description }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div class="modal fade" id="addTransactionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('add_transaction') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select name="type" class="form-control" required>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-control" required>
+                            <option value="utilities">Utilities</option>
+                            <option value="food">Food</option>
+                            <option value="medical">Medical</option>
+                            <option value="education">Education</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" name="amount" class="form-control" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Record Donation Modal -->
+<div class="modal fade" id="recordDonationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Record Donation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('record_donation') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Donor Name</label>
+                        <input type="text" name="donor_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select name="type" class="form-control" required>
+                            <option value="monetary">Monetary</option>
+                            <option value="in-kind">In-Kind</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount/Value</label>
+                        <input type="number" name="amount" class="form-control" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Record Donation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

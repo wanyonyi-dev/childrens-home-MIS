@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+     <!-- Back to Dashboard Button -->
+     <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    <div class="header-section">
+        <h2>Activities Management</h2>
+        <a href="{{ url_for('add_activity') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Activity
+        </a>
+    </div>
+
+    <div class="filter-section">
+        <select class="form-control" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+    </div>
+
+    <div class="activities-grid">
+        {% for activity in activities %}
+        <div class="activity-card">
+            <div class="activity-header">
+                <h4>{{ activity.title }}</h4>
+                <span class="badge badge-{{ activity.status }}">{{ activity.status }}</span>
+            </div>
+            <div class="activity-details">
+                <p><i class="far fa-calendar"></i> {{ activity.date }}</p>
+                <p><i class="far fa-clock"></i> {{ activity.time }}</p>
+                <p>{{ activity.description }}</p>
+            </div>
+            <div class="activity-actions">
+                <a href="#" class="btn btn-sm btn-info">View</a>
+                <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{{ url_for('delete_record', record_type='activity', record_id=activity._id) }}" 
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure?')">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

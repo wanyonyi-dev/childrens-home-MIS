@@ -1,0 +1,34 @@
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Children's Home</a>
+        
+        {% if session.username %}
+            <div class="navbar-nav">
+                {% if session.role == 'staff' %}
+                    <a class="nav-link" href="{{ url_for('staff_dashboard') }}">Dashboard</a>
+                    <a class="nav-link" href="{{ url_for('view_children') }}">Children</a>
+                    <a class="nav-link" href="{{ url_for('manage_activities') }}">Activities</a>
+                {% endif %}
+                
+                {% if session.role in ['staff', 'nurse'] %}
+                    <a class="nav-link" href="{{ url_for('health_records') }}">Health Records</a>
+                {% endif %}
+                
+                {% if session.role in ['staff', 'teacher'] %}
+                    <a class="nav-link" href="{{ url_for('academic_records') }}">Academic Records</a>
+                {% endif %}
+                
+                {% if session.role == 'admin' %}
+                    <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
+                {% endif %}
+                
+                <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        {% else %}
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+            </div>
+        {% endif %}
+    </div>
+</nav> 

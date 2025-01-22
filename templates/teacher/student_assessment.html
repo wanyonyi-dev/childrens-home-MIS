@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Back to Dashboard Button -->
+    <div class="mb-3 d-flex justify-content-end">
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <h2>Student Assessment</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="child_id">Select Student</label>
+            <select class="form-control" id="child_id" name="child_id" required>
+                <option value="">Choose a student...</option>
+                {% for child in children %}
+                <option value="{{ child._id }}">{{ child.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="subject_id">Select Subject</label>
+            <select class="form-control" id="subject_id" name="subject_id" required>
+                <option value="">Choose a subject...</option>
+                {% for subject in subjects %}
+                <option value="{{ subject._id }}">{{ subject.name }} (Grade {{ subject.grade_level }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="assessment_type">Assessment Type</label>
+            <select class="form-control" id="assessment_type" name="assessment_type" required>
+                <option value="quiz">Quiz</option>
+                <option value="test">Test</option>
+                <option value="homework">Homework</option>
+                <option value="project">Project</option>
+                <option value="exam">Exam</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="score">Score</label>
+            <input type="number" class="form-control" id="score" name="score" required>
+        </div>
+
+        <div class="form-group">
+            <label for="grade">Grade</label>
+            <select class="form-control" id="grade" name="grade" required>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="F">F</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="comments">Comments</label>
+            <textarea class="form-control" id="comments" name="comments" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Record Assessment</button>
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %} 
