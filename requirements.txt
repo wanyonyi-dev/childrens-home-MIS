@@ -2,7 +2,7 @@ Flask==3.0.0
 pymongo==4.6.1
 Werkzeug==3.0.1
 python-dotenv==1.0.0
-Pillow==10.1.0
+Pillow>=10.2.0
 gunicorn==21.2.0
 blinker==1.7.0
 click==8.1.7
